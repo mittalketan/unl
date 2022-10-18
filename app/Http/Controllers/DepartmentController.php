@@ -14,7 +14,7 @@ class DepartmentController extends Controller
     /**
      * TODO: 1. First issue. You need to bind a concrete instance of EmployeeRepositoryInterface
      */
-    public function getEmployees(EmployeeRepositoryInterface $employeeRepository, int $departmentId): JsonResponse
+    public function getActiveEmployees(EmployeeRepositoryInterface $employeeRepository, int $departmentId): JsonResponse
     {
         /**
          * TODO: 2. Second issue. Need find concrete department by $departmentId
@@ -41,6 +41,7 @@ class DepartmentController extends Controller
          * TODO: 5. Five issue. We need to block all employees of the department
          * @see EmployeeStatusEnum
          */
+
 
         return response()->json();
     }
