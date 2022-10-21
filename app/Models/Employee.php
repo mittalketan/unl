@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\EmployeeStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property-read int $id
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Employee extends Model
 {
+    use  HasFactory;
+
     protected $table = 'employees';
 
     public function department(): BelongsTo
@@ -24,7 +27,8 @@ class Employee extends Model
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function user(): BelongsTo{
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 

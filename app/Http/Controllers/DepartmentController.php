@@ -4,45 +4,65 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Contract\EmployeeRepositoryInterface;
-use App\Enums\EmployeeStatusEnum;
+use Exception;
 use App\Models\Department;
+use App\Enums\EmployeeStatusEnum;
 use Illuminate\Http\JsonResponse;
+use App\Contract\EmployeeRepositoryInterface;
+use App\Contract\DepartmentRepositoryInterface;
+use App\Models\Employee;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DepartmentController extends Controller
 {
-    /**
-     * TODO: 1. First issue. You need to bind a concrete instance of EmployeeRepositoryInterface
-     */
-    public function getActiveEmployees(EmployeeRepositoryInterface $employeeRepository, int $departmentId): JsonResponse
-    {
-        /**
-         * TODO: 2. Second issue. Need find concrete department by $departmentId
-         *
-         * @var Department $department
-         */
-        $department = Department::query()->first();
-
-        $employees = $employeeRepository->findActiveByDepartment($department);
-
-        return response()->json($employees);
+    public function __construct(
+        private DepartmentRepositoryInterface $departmentRepository,
+        private EmployeeRepositoryInterface $employeeRepository
+    ) {
     }
 
-    public function blockEmployees(int $departmentId): JsonResponse{
+    /**
+     * get Active Employees
+     *
+     * @param integer $departmentId
+     * @return JsonResponse
+     */
+    public function getActiveEmployees(int $departmentId): JsonResponse
+    {
+        try {
 
-        /**
-         * TODO: 4. Second issue. You need to find a specific department by $departmentId
-         *
-         * @var Department $department
-         */
-        $department = Department::query()->first();
+            $department = $this->departmentRepository->findDepartmentById($departmentId);
+            $employees = $this->employeeRepository->findActiveByDepartment($department);
+            return response()->json($employees);
+        } catch (ModelNotFoundException $e) {
 
-        /**
-         * TODO: 5. Five issue. We need to block all employees of the department
-         * @see EmployeeStatusEnum
-         */
+            return response()->json(["error" => "Resource not found"], 404);
+        } catch (Exception $e) {
 
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 
-        return response()->json();
+    /**
+     * block Employees
+     *
+     * @param integer $departmentId
+     * @return JsonResponse
+     */
+    public function blockEmployees(int $departmentId): JsonResponse
+    {
+
+        try {
+
+            $department = $this->departmentRepository->findDepartmentById($departmentId);
+            $noOfRecordUpdated = $this->employeeRepository->updateEmployeeStatusByDepartment($department->id, EmployeeStatusEnum::BLOCKED->id());
+            return response()->json(['data' => $noOfRecordUpdated . ' records are updated']);
+        } catch (ModelNotFoundException $e) {
+
+            return response()->json(["error" => "Resource not found"], 404);
+        } catch (Exception $e) {
+
+            return response()->json($e->getMessage(), 500);
+        }
     }
 }
