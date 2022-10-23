@@ -34,17 +34,17 @@ class DepartmentController extends Controller
             $department = $this->departmentRepository->findDepartmentById($departmentId);
             $employees = $this->employeeRepository->findActiveByDepartment($department);
             return response()->json($employees);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) { // Resource not found
 
-            return response()->json(["error" => "Resource not found"], 404);
-        } catch (Exception $e) {
+            return response()->json(['error' => 'Data not found.'], JsonResponse::HTTP_NOT_FOUND);
+        } catch (Exception $e) { // Anything that went wrong
 
-            return response()->json($e->getMessage(), 500);
+            return response()->json($e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * block Employees
+     * block employees for a department
      *
      * @param integer $departmentId
      * @return JsonResponse
@@ -57,12 +57,12 @@ class DepartmentController extends Controller
             $department = $this->departmentRepository->findDepartmentById($departmentId);
             $noOfRecordUpdated = $this->employeeRepository->updateEmployeeStatusByDepartment($department->id, EmployeeStatusEnum::BLOCKED->id());
             return response()->json(['data' => $noOfRecordUpdated . ' records are updated']);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) { // Resource not found
 
-            return response()->json(["error" => "Resource not found"], 404);
-        } catch (Exception $e) {
+            return response()->json(['error' => 'Data not found.'], JsonResponse::HTTP_NOT_FOUND);
+        } catch (Exception $e) { // Anything that went wrong
 
-            return response()->json($e->getMessage(), 500);
+            return response()->json($e->getMessage(), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

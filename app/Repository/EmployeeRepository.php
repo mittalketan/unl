@@ -12,6 +12,12 @@ use App\Contract\EmployeeRepositoryInterface;
 
 class EmployeeRepository implements EmployeeRepositoryInterface
 {
+    /**
+     * find Active By Department
+     *
+     * @param Department $department
+     * @return Collection
+     */
     public function findActiveByDepartment(Department $department): Collection
     {
         return Employee::where('status', EmployeeStatusEnum::ACTIVE->id())
@@ -19,6 +25,13 @@ class EmployeeRepository implements EmployeeRepositoryInterface
             ->get();
     }
 
+    /**
+     * update Employee Status By Department
+     *
+     * @param integer $departmentId
+     * @param integer $status
+     * @return integer
+     */
     public function updateEmployeeStatusByDepartment(int $departmentId, int $status): int
     {
         return Employee::where('department_id', $departmentId)
